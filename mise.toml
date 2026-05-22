@@ -1,0 +1,3 @@
+[tools]
+gradle = "9"
+java = "graalvm-community-21"

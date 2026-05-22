@@ -1,0 +1,21 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+dependencies {
+    implementation project(':core')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+gradlePlugin {
+    plugins {
+        sqlFormatter {
+            id = 'dev.isksss.java.sql-formatter'
+            implementationClass = 'dev.isksss.java.sqlformatter.gradle.SqlFormatterPlugin'
+            displayName = 'Java SQL Formatter'
+            description = 'Formats SQL files from Gradle with a Java SQL formatter.'
+        }
+    }
+}

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew test
+
+  native-cli:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            executable: ./cli/build/native/nativeCompile/sql-formatter-java
+          - os: macos-latest
+            executable: ./cli/build/native/nativeCompile/sql-formatter-java
+          - os: windows-latest
+            executable: ./cli/build/native/nativeCompile/sql-formatter-java.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: graalvm-community
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: gradle
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :cli:nativeCompile
+        shell: bash
+      - run: ${{ matrix.executable }} --help
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sql-formatter-java-${{ matrix.os }}
+          path: cli/build/native/nativeCompile/sql-formatter-java*

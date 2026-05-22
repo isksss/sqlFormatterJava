@@ -1,0 +1,26 @@
+plugins {
+    id 'base'
+}
+
+group = 'dev.isksss.java'
+version = '0.1.0-SNAPSHOT'
+
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
+
+    plugins.withId('java') {
+        java {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+            options.release = 17
+        }
+
+        tasks.withType(Test).configureEach {
+            useJUnitPlatform()
+        }
+    }
+}
