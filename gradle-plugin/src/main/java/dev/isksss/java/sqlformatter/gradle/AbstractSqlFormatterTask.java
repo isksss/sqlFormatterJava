@@ -1,8 +1,10 @@
 package dev.isksss.java.sqlformatter.gradle;
 
+import dev.isksss.java.sqlformatter.core.ErrorPolicy;
 import dev.isksss.java.sqlformatter.core.FormatterConfig;
 import dev.isksss.java.sqlformatter.core.SqlFormatterService;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -48,6 +50,14 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     @Optional
     public abstract Property<Integer> getMaxColumnLength();
 
+    @Input
+    @Optional
+    public abstract Property<ErrorPolicy> getErrorPolicy();
+
+    @Input
+    @Optional
+    public abstract Property<String> getCharset();
+
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
     public abstract ConfigurableFileCollection getSqlFiles();
@@ -72,6 +82,17 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
                 getIndent().getOrNull(),
                 getUppercase().getOrNull(),
                 getLinesBetweenQueries().getOrNull(),
-                getMaxColumnLength().getOrNull());
+                getMaxColumnLength().getOrNull(),
+                getErrorPolicy().getOrNull(),
+                getCharset().getOrNull());
+    }
+
+    @Internal
+    protected Charset getSqlCharset() {
+        try {
+            return Charset.forName(getFormatterConfig().mergeOver(FormatterConfig.defaults()).charset());
+        } catch (RuntimeException exception) {
+            throw new GradleException("Unsupported sqlFormatter charset.", exception);
+        }
     }
 }

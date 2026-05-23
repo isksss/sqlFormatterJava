@@ -12,6 +12,9 @@ public final class SqlFormatterService {
             }
             return SqlFormatter.of(config.dialect()).format(sql, formatConfig);
         } catch (RuntimeException exception) {
+            if (config.errorPolicy() != ErrorPolicy.THROW) {
+                return sql;
+            }
             throw new SqlFormattingException("Failed to format SQL.", exception);
         }
     }

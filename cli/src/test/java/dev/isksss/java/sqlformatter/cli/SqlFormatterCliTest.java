@@ -52,6 +52,30 @@ class SqlFormatterCliTest {
         assertTrue(result.stderr().contains("Unknown config field"));
     }
 
+    @Test
+    void readsConfiguredInputCharset() throws Exception {
+        Path sql = Files.writeString(
+                tempDir.resolve("latin1.sql"),
+                "select 'caf\u00e9' as label",
+                StandardCharsets.ISO_8859_1);
+        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"charset\":\"ISO-8859-1\"}");
+
+        Result result = run(new String[] {"--config", config.toString(), sql.toString()}, "");
+
+        assertEquals(0, result.exitCode());
+        assertTrue(result.stdout().contains("'caf\u00e9'"));
+    }
+
+    @Test
+    void exposesThrowErrorPolicyAsFailure() {
+        Result result = run(
+                new String[] {"--dialect", "unknown", "--error-policy", "throw"},
+                "select 1");
+
+        assertEquals(1, result.exitCode());
+        assertTrue(result.stderr().contains("Failed to format SQL"));
+    }
+
     private Result run(String[] args, String stdin) {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();

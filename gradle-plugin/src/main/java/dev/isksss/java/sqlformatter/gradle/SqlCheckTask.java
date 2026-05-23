@@ -2,7 +2,6 @@ package dev.isksss.java.sqlformatter.gradle;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ public abstract class SqlCheckTask extends AbstractSqlFormatterTask {
         List<File> unformatted = new ArrayList<>();
         for (File file : selectedSqlFiles()) {
             try {
-                String input = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+                String input = Files.readString(file.toPath(), getSqlCharset());
                 if (!input.equals(getFormatter().format(input, getFormatterConfig()))) {
                     unformatted.add(file);
                 }
@@ -29,4 +28,5 @@ public abstract class SqlCheckTask extends AbstractSqlFormatterTask {
             throw new GradleException("SQL files need formatting: " + unformatted);
         }
     }
+
 }

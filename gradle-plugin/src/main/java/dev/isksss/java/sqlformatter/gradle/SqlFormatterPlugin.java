@@ -43,5 +43,7 @@ public final class SqlFormatterPlugin implements Plugin<Project> {
         task.getUppercase().set(extension.getUppercase());
         task.getLinesBetweenQueries().set(extension.getLinesBetweenQueries());
         task.getMaxColumnLength().set(extension.getMaxColumnLength());
+        task.getErrorPolicy().set(extension.getErrorPolicy());
+        task.getCharset().set(extension.getCharset());
     }
 }

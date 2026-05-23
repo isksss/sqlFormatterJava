@@ -25,13 +25,16 @@ sqlFormatter {
     uppercase = true
     linesBetweenQueries = 1
     maxColumnLength = 100
+    errorPolicy = dev.isksss.java.sqlformatter.core.ErrorPolicy.KEEP_INPUT
+    charset = 'UTF-8'
 }
 ```
 
 `files.from` is required. Includes default to `**/*.sql`; an explicit include
-can add more patterns. Supported options are intentionally limited to the
-formatter engine API: `dialect`, `indent`, `uppercase`, `linesBetweenQueries`,
-and `maxColumnLength`.
+can add more patterns. Formatting options are limited to the formatter engine
+API: `dialect`, `indent`, `uppercase`, `linesBetweenQueries`, and
+`maxColumnLength`. `errorPolicy` controls whether formatting errors keep the
+SQL input or throw. `charset` controls Gradle SQL file reads and writes.
 
 ```bash
 ./gradlew sqlFormat
@@ -59,7 +62,9 @@ Windows builds produce `sql-formatter-java.exe`.
   "indent": "    ",
   "uppercase": true,
   "linesBetweenQueries": 1,
-  "maxColumnLength": 100
+  "maxColumnLength": 100,
+  "errorPolicy": "keep-input",
+  "charset": "UTF-8"
 }
 ```
 

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.gradle.testkit.runner.BuildResult;
@@ -70,6 +71,22 @@ class SqlFormatterPluginTest {
         BuildResult result = runner("sqlCheck").build();
 
         assertEquals(SUCCESS, result.task(":sqlCheck").getOutcome());
+    }
+
+    @Test
+    void formatsFilesWithConfiguredCharset() throws IOException {
+        Files.writeString(
+                projectDir.resolve("build.gradle"),
+                Files.readString(projectDir.resolve("build.gradle"))
+                        .replace("uppercase = true", "uppercase = true\n    charset = 'UTF-16'"));
+        Path sql = projectDir.resolve("sql/latin1.sql");
+        Files.createDirectories(sql.getParent());
+        Files.writeString(sql, "select 'caf\u00e9' as label", StandardCharsets.UTF_16);
+
+        BuildResult result = runner("sqlFormat").build();
+
+        assertEquals(SUCCESS, result.task(":sqlFormat").getOutcome());
+        assertTrue(Files.readString(sql, StandardCharsets.UTF_16).contains("'caf\u00e9'"));
     }
 
     private Path write(String relative, String contents) throws IOException {

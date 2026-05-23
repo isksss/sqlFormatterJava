@@ -1,5 +1,6 @@
 package dev.isksss.java.sqlformatter.gradle;
 
+import dev.isksss.java.sqlformatter.core.ErrorPolicy;
 import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
@@ -30,4 +31,8 @@ public abstract class SqlFormatterExtension {
     public abstract Property<Integer> getLinesBetweenQueries();
 
     public abstract Property<Integer> getMaxColumnLength();
+
+    public abstract Property<ErrorPolicy> getErrorPolicy();
+
+    public abstract Property<String> getCharset();
 }

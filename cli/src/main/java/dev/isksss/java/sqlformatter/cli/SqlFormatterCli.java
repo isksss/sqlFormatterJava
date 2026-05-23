@@ -5,7 +5,7 @@ import dev.isksss.java.sqlformatter.core.SqlFormatterService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 public final class SqlFormatterCli {
@@ -29,9 +29,10 @@ public final class SqlFormatterCli {
         try {
             CliArguments arguments = CliArguments.parse(args);
             FormatterConfig config = loadConfig(arguments).mergeOver(FormatterConfig.defaults());
+            Charset charset = charset(config.charset());
             String sql = arguments.sqlFile() == null
-                    ? new String(stdin.readAllBytes(), StandardCharsets.UTF_8)
-                    : Files.readString(arguments.sqlFile(), StandardCharsets.UTF_8);
+                    ? new String(stdin.readAllBytes(), charset)
+                    : Files.readString(arguments.sqlFile(), charset);
             stdout.print(formatter.format(sql, config));
             return 0;
         } catch (HelpRequestedException exception) {
@@ -54,6 +55,14 @@ public final class SqlFormatterCli {
         return arguments.overrides().mergeOver(fileConfig);
     }
 
+    private Charset charset(String name) {
+        try {
+            return Charset.forName(name);
+        } catch (RuntimeException exception) {
+            throw new IllegalArgumentException("Unsupported charset: " + name, exception);
+        }
+    }
+
     private String usage() {
         return """
                 Usage: sql-formatter-java [OPTIONS] [SQL_FILE]
@@ -63,6 +72,8 @@ public final class SqlFormatterCli {
                   --uppercase BOOLEAN            Uppercase keywords
                   --lines-between-queries COUNT  Blank lines between queries
                   --max-column-length COUNT      Max inline column length
+                  --error-policy POLICY          keep-input or throw
+                  --charset NAME                 SQL input charset
                 Without SQL_FILE, SQL is read from stdin.
                 """;
     }

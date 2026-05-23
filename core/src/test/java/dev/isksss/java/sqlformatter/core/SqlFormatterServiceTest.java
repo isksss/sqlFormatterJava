@@ -12,7 +12,7 @@ class SqlFormatterServiceTest {
     void formatsWithConfiguredKeywordCase() {
         String formatted = service.format(
                 "select id,name from users where active=true",
-                new FormatterConfig("postgresql", "    ", true, 1, 50));
+                new FormatterConfig("postgresql", "    ", true, 1, 50, ErrorPolicy.THROW, null));
 
         assertEquals(
                 """
@@ -31,6 +31,15 @@ class SqlFormatterServiceTest {
     void rejectsUnknownDialect() {
         assertThrows(
                 SqlFormattingException.class,
-                () -> service.format("select 1", new FormatterConfig("unknown", null, null, null, null)));
+                () -> service.format(
+                        "select 1",
+                        new FormatterConfig("unknown", null, null, null, null, ErrorPolicy.THROW, null)));
+    }
+
+    @Test
+    void keepsInputWhenFormattingFailsByDefault() {
+        String sql = "select 1";
+
+        assertEquals(sql, service.format(sql, new FormatterConfig("unknown", null, null, null, null)));
     }
 }

@@ -2,7 +2,6 @@ package dev.isksss.java.sqlformatter.gradle;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
@@ -14,14 +13,16 @@ public abstract class SqlFormatTask extends AbstractSqlFormatterTask {
     public void format() {
         for (File file : selectedSqlFiles()) {
             try {
-                String input = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+                var charset = getSqlCharset();
+                String input = Files.readString(file.toPath(), charset);
                 String formatted = getFormatter().format(input, getFormatterConfig());
                 if (!input.equals(formatted)) {
-                    Files.writeString(file.toPath(), formatted, StandardCharsets.UTF_8);
+                    Files.writeString(file.toPath(), formatted, charset);
                 }
             } catch (IOException exception) {
                 throw new GradleException("Failed to format " + file + ".", exception);
             }
         }
     }
+
 }
