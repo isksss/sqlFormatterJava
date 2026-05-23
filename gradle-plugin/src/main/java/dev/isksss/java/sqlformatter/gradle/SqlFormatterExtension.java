@@ -47,19 +47,21 @@ public abstract class SqlFormatterExtension {
      */
     public abstract Property<String> getDialect();
 
-    /**
-     * インデント文字列。
-     *
-     * @return インデント文字列プロパティ
-     */
-    public abstract Property<String> getIndent();
+    public abstract Property<Integer> getTabWidth();
 
-    /**
-     * キーワードなどを大文字化するか。
-     *
-     * @return 大文字化設定プロパティ
-     */
-    public abstract Property<Boolean> getUppercase();
+    public abstract Property<Boolean> getUseTabs();
+
+    public abstract Property<String> getKeywordCase();
+
+    public abstract Property<String> getDataTypeCase();
+
+    public abstract Property<String> getFunctionCase();
+
+    public abstract Property<String> getIdentifierCase();
+
+    public abstract Property<String> getLogicalOperatorNewline();
+
+    public abstract Property<Integer> getExpressionWidth();
 
     /**
      * 複数SQL文の間に入れる空行数。
@@ -68,12 +70,9 @@ public abstract class SqlFormatterExtension {
      */
     public abstract Property<Integer> getLinesBetweenQueries();
 
-    /**
-     * 折返しの目安となる最大桁数。
-     *
-     * @return 最大桁数プロパティ
-     */
-    public abstract Property<Integer> getMaxColumnLength();
+    public abstract Property<Boolean> getDenseOperators();
+
+    public abstract Property<Boolean> getNewlineBeforeSemicolon();
 
     /**
      * 整形失敗時の扱い。

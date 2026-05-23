@@ -22,7 +22,7 @@ class SqlFormatterCliTest {
         Path config = Files.writeString(
                 tempDir.resolve("sql-formatter.json"),
                 """
-                {"dialect":"postgresql","uppercase":true}
+                {"dialect":"postgresql","keywordCase":"upper"}
                 """);
         Result result = run(
                 new String[] {"--config", config.toString()},
@@ -33,10 +33,25 @@ class SqlFormatterCliTest {
     }
 
     @Test
+    void formatsWithoutConfigOrDialect() {
+        Result result = run(new String[] {}, "select id from users");
+
+        assertEquals(0, result.exitCode());
+        assertEquals(
+                """
+                select
+                  id
+                from
+                  users
+                """,
+                result.stdout() + "\n");
+    }
+
+    @Test
     void commandLineOptionsOverrideJsonConfig() throws Exception {
-        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"uppercase\":false}");
+        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"keywordCase\":\"lower\"}");
         Result result = run(
-                new String[] {"--config", config.toString(), "--uppercase", "true"},
+                new String[] {"--config", config.toString(), "--keyword-case", "upper"},
                 "select id from users");
 
         assertEquals(0, result.exitCode());
@@ -45,7 +60,7 @@ class SqlFormatterCliTest {
 
     @Test
     void rejectsUnknownJsonConfigFields() throws Exception {
-        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"keywordCase\":\"upper\"}");
+        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"uppercase\":true}");
         Result result = run(new String[] {"--config", config.toString()}, "select 1");
 
         assertEquals(2, result.exitCode());
@@ -64,6 +79,18 @@ class SqlFormatterCliTest {
 
         assertEquals(0, result.exitCode());
         assertTrue(result.stdout().contains("'caf\u00e9'"));
+    }
+
+    @Test
+    void appliesIndentAndCaseOptions() {
+        Result result = run(
+                new String[] {
+                    "--dialect", "postgresql", "--tab-width", "4", "--keyword-case", "upper", "--data-type-case", "upper"
+                },
+                "create table users(id uuid)");
+
+        assertEquals(0, result.exitCode());
+        assertTrue(result.stdout().contains("CREATE TABLE users(id UUID)"));
     }
 
     @Test

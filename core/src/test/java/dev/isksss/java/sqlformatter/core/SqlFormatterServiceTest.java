@@ -12,7 +12,21 @@ class SqlFormatterServiceTest {
     void formatsWithConfiguredKeywordCase() {
         String formatted = service.format(
                 "select id,name from users where active=true",
-                new FormatterConfig("postgresql", "    ", true, 1, 50, ErrorPolicy.THROW, null));
+                new FormatterConfig(
+                        "postgresql",
+                        4,
+                        false,
+                        "upper",
+                        "preserve",
+                        "preserve",
+                        "preserve",
+                        "before",
+                        50,
+                        1,
+                        false,
+                        false,
+                        ErrorPolicy.THROW,
+                        null));
 
         assertEquals(
                 """
@@ -33,21 +47,21 @@ class SqlFormatterServiceTest {
                 SqlFormattingException.class,
                 () -> service.format(
                         "select 1",
-                        new FormatterConfig("unknown", null, null, null, null, ErrorPolicy.THROW, null)));
+                        config("unknown", ErrorPolicy.THROW)));
     }
 
     @Test
     void keepsInputWhenFormattingFailsByDefault() {
         String sql = "select 1";
 
-        assertEquals(sql, service.format(sql, new FormatterConfig("unknown", null, null, null, null)));
+        assertEquals(sql, service.format(sql, config("unknown", null)));
     }
 
     @Test
     void wrapsJoinOnConditions() {
         String formatted = service.format(
                 "select a.id from table_a a left join table_b b on a.id=b.id and a.type=b.type",
-                new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null));
+                config("postgresql", ErrorPolicy.THROW));
 
         assertEquals(
                 """
@@ -66,7 +80,7 @@ class SqlFormatterServiceTest {
     void doesNotSplitJoinOnAndInsideStringLiterals() {
         String formatted = service.format(
                 "select a.id from table_a a join table_b b on a.label='x and y' and a.id=b.id",
-                new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null));
+                config("postgresql", ErrorPolicy.THROW));
 
         assertEquals(
                 """
@@ -85,7 +99,7 @@ class SqlFormatterServiceTest {
     void doesNotSplitJoinOnBetweenCondition() {
         String formatted = service.format(
                 "select a.id from table_a a join table_b b on a.created_at between b.started_at and b.ended_at and a.id=b.id",
-                new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null));
+                config("postgresql", ErrorPolicy.THROW));
 
         assertEquals(
                 """
@@ -102,11 +116,29 @@ class SqlFormatterServiceTest {
 
     @Test
     void keepsCteOpeningAndJoinWrappingIdempotent() {
-        FormatterConfig config = new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null);
+        FormatterConfig config = config("postgresql", ErrorPolicy.THROW);
         String formatted = service.format(
                 "with a as(select * from table_a a join table_b b on a.id=b.id and a.kind=b.kind) select * from a",
                 config);
 
         assertEquals(formatted, service.format(formatted, config));
+    }
+
+    private FormatterConfig config(String dialect, ErrorPolicy errorPolicy) {
+        return new FormatterConfig(
+                dialect,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                errorPolicy,
+                null);
     }
 }

@@ -52,10 +52,17 @@ public final class SqlFormatterPlugin implements Plugin<Project> {
         task.getIncludes().set(extension.getFiles().getIncludes());
         task.getExcludes().set(extension.getFiles().getExcludes());
         task.getDialect().set(extension.getDialect());
-        task.getIndent().set(extension.getIndent());
-        task.getUppercase().set(extension.getUppercase());
+        task.getTabWidth().set(extension.getTabWidth());
+        task.getUseTabs().set(extension.getUseTabs());
+        task.getKeywordCase().set(extension.getKeywordCase());
+        task.getDataTypeCase().set(extension.getDataTypeCase());
+        task.getFunctionCase().set(extension.getFunctionCase());
+        task.getIdentifierCase().set(extension.getIdentifierCase());
+        task.getLogicalOperatorNewline().set(extension.getLogicalOperatorNewline());
+        task.getExpressionWidth().set(extension.getExpressionWidth());
         task.getLinesBetweenQueries().set(extension.getLinesBetweenQueries());
-        task.getMaxColumnLength().set(extension.getMaxColumnLength());
+        task.getDenseOperators().set(extension.getDenseOperators());
+        task.getNewlineBeforeSemicolon().set(extension.getNewlineBeforeSemicolon());
         task.getErrorPolicy().set(extension.getErrorPolicy());
         task.getCharset().set(extension.getCharset());
     }

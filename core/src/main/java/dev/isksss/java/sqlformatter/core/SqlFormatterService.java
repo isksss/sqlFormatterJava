@@ -1,7 +1,7 @@
 package dev.isksss.java.sqlformatter.core;
 
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
-import com.github.vertical_blank.sqlformatter.core.FormatConfig;
+import dev.isksss.java.sqlformatter.core.engine.SqlFormatter;
+import dev.isksss.java.sqlformatter.core.engine.core.FormatConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,17 +63,38 @@ public final class SqlFormatterService {
      */
     private FormatConfig toEngineConfig(FormatterConfig config) {
         FormatConfig.FormatConfigBuilder builder = FormatConfig.builder();
-        if (config.indent() != null) {
-            builder.indent(config.indent());
+        if (config.tabWidth() != null) {
+            builder.tabWidth(config.tabWidth());
         }
-        if (config.uppercase() != null) {
-            builder.uppercase(config.uppercase());
+        if (config.useTabs() != null) {
+            builder.useTabs(config.useTabs());
+        }
+        if (config.keywordCase() != null) {
+            builder.keywordCase(config.keywordCase());
+        }
+        if (config.dataTypeCase() != null) {
+            builder.dataTypeCase(config.dataTypeCase());
+        }
+        if (config.functionCase() != null) {
+            builder.functionCase(config.functionCase());
+        }
+        if (config.identifierCase() != null) {
+            builder.identifierCase(config.identifierCase());
+        }
+        if (config.logicalOperatorNewline() != null) {
+            builder.logicalOperatorNewline(config.logicalOperatorNewline());
+        }
+        if (config.expressionWidth() != null) {
+            builder.maxColumnLength(config.expressionWidth());
         }
         if (config.linesBetweenQueries() != null) {
             builder.linesBetweenQueries(config.linesBetweenQueries());
         }
-        if (config.maxColumnLength() != null) {
-            builder.maxColumnLength(config.maxColumnLength());
+        if (config.denseOperators() != null) {
+            builder.denseOperators(config.denseOperators());
+        }
+        if (config.newlineBeforeSemicolon() != null) {
+            builder.newlineBeforeSemicolon(config.newlineBeforeSemicolon());
         }
         return builder.build();
     }
@@ -82,8 +103,19 @@ public final class SqlFormatterService {
      * フォーマッタエンジンだけでは安定しない構文別責務の出力を補正する。
      */
     private String normalizeResponsibilityFormatting(String sql, FormatterConfig config) {
-        String indent = config.indent() != null ? config.indent() : DEFAULT_INDENT;
+        String indent = resolveIndent(config);
         return normalizeClauseBodyIndent(normalizeJoinOn(normalizeCteOpening(sql, indent), indent), indent);
+    }
+
+    private String resolveIndent(FormatterConfig config) {
+        if (Boolean.TRUE.equals(config.useTabs())) {
+            return "\t";
+        }
+        int tabWidth = config.tabWidth() != null ? config.tabWidth() : DEFAULT_INDENT.length();
+        if (tabWidth < 1) {
+            throw new IllegalArgumentException("tabWidth must be greater than zero.");
+        }
+        return " ".repeat(tabWidth);
     }
 
     /**

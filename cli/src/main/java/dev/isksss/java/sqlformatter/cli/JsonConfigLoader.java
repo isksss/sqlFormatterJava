@@ -14,10 +14,17 @@ final class JsonConfigLoader {
 
     FormatterConfig load(Path path) throws IOException {
         String dialect = null;
-        String indent = null;
-        Boolean uppercase = null;
+        Integer tabWidth = null;
+        Boolean useTabs = null;
+        String keywordCase = null;
+        String dataTypeCase = null;
+        String functionCase = null;
+        String identifierCase = null;
+        String logicalOperatorNewline = null;
+        Integer expressionWidth = null;
         Integer linesBetweenQueries = null;
-        Integer maxColumnLength = null;
+        Boolean denseOperators = null;
+        Boolean newlineBeforeSemicolon = null;
         ErrorPolicy errorPolicy = null;
         String charset = null;
         try (JsonParser parser = jsonFactory.createParser(path.toFile())) {
@@ -32,10 +39,17 @@ final class JsonConfigLoader {
                 parser.nextToken();
                 switch (field) {
                     case "dialect" -> dialect = string(parser, field);
-                    case "indent" -> indent = string(parser, field);
-                    case "uppercase" -> uppercase = bool(parser, field);
+                    case "tabWidth" -> tabWidth = integer(parser, field);
+                    case "useTabs" -> useTabs = bool(parser, field);
+                    case "keywordCase" -> keywordCase = string(parser, field);
+                    case "dataTypeCase" -> dataTypeCase = string(parser, field);
+                    case "functionCase" -> functionCase = string(parser, field);
+                    case "identifierCase" -> identifierCase = string(parser, field);
+                    case "logicalOperatorNewline" -> logicalOperatorNewline = string(parser, field);
+                    case "expressionWidth" -> expressionWidth = integer(parser, field);
                     case "linesBetweenQueries" -> linesBetweenQueries = integer(parser, field);
-                    case "maxColumnLength" -> maxColumnLength = integer(parser, field);
+                    case "denseOperators" -> denseOperators = bool(parser, field);
+                    case "newlineBeforeSemicolon" -> newlineBeforeSemicolon = bool(parser, field);
                     case "errorPolicy" -> errorPolicy = errorPolicy(parser, field);
                     case "charset" -> charset = string(parser, field);
                     default -> throw new IllegalArgumentException("Unknown config field: " + field);
@@ -46,7 +60,20 @@ final class JsonConfigLoader {
             }
         }
         return new FormatterConfig(
-                dialect, indent, uppercase, linesBetweenQueries, maxColumnLength, errorPolicy, charset);
+                dialect,
+                tabWidth,
+                useTabs,
+                keywordCase,
+                dataTypeCase,
+                functionCase,
+                identifierCase,
+                logicalOperatorNewline,
+                expressionWidth,
+                linesBetweenQueries,
+                denseOperators,
+                newlineBeforeSemicolon,
+                errorPolicy,
+                charset);
     }
 
     private String string(JsonParser parser, String field) throws IOException {

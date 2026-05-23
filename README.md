@@ -1,12 +1,13 @@
 # sqlFormatterJava
 
 Java SQL formatter core, Gradle plugin, and native CLI. The formatter engine is
-[`com.github.vertical-blank:sql-formatter`](https://github.com/vertical-blank/sql-formatter).
+implemented in this repository and supports `postgresql`, `mysql`, and `sqlite`.
 
 ## Gradle plugin
 
-Apply the plugin and configure both the SQL files and formatter options in
-`build.gradle`.
+Apply the plugin and configure SQL file selection in `build.gradle`. Formatter
+options can be omitted; the default is standard SQL, two-space indentation, and
+preserved casing.
 
 ```groovy
 plugins {
@@ -21,20 +22,26 @@ sqlFormatter {
     }
 
     dialect = 'postgresql'
-    indent = '    '
-    uppercase = true
+    tabWidth = 4
+    useTabs = false
+    keywordCase = 'upper'
+    dataTypeCase = 'upper'
+    functionCase = 'preserve'
+    identifierCase = 'preserve'
+    logicalOperatorNewline = 'before'
+    expressionWidth = 80
     linesBetweenQueries = 1
-    maxColumnLength = 100
+    denseOperators = false
+    newlineBeforeSemicolon = false
     errorPolicy = dev.isksss.java.sqlformatter.core.ErrorPolicy.KEEP_INPUT
     charset = 'UTF-8'
 }
 ```
 
 `files.from` is required. Includes default to `**/*.sql`; an explicit include
-can add more patterns. Formatting options are limited to the formatter engine
-API: `dialect`, `indent`, `uppercase`, `linesBetweenQueries`, and
-`maxColumnLength`. `errorPolicy` controls whether formatting errors keep the
-SQL input or throw. `charset` controls Gradle SQL file reads and writes.
+can add more patterns. Formatting options follow the same shape as the CLI JSON
+config. `errorPolicy` controls whether formatting errors keep the SQL input or
+throw. `charset` controls Gradle SQL file reads and writes.
 
 ```bash
 ./gradlew sqlFormat
@@ -59,10 +66,17 @@ Windows builds produce `sql-formatter-java.exe`.
 ```json
 {
   "dialect": "postgresql",
-  "indent": "    ",
-  "uppercase": true,
+  "tabWidth": 4,
+  "useTabs": false,
+  "keywordCase": "upper",
+  "dataTypeCase": "upper",
+  "functionCase": "preserve",
+  "identifierCase": "preserve",
+  "logicalOperatorNewline": "before",
+  "expressionWidth": 80,
   "linesBetweenQueries": 1,
-  "maxColumnLength": 100,
+  "denseOperators": false,
+  "newlineBeforeSemicolon": false,
   "errorPolicy": "keep-input",
   "charset": "UTF-8"
 }
@@ -72,7 +86,7 @@ Command line options override JSON config fields.
 
 ```bash
 sql-formatter-java --help
-sql-formatter-java --config sql-formatter.json --uppercase true query.sql
+sql-formatter-java --config sql-formatter.json --keyword-case upper query.sql
 ```
 
 ## Development

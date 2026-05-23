@@ -62,23 +62,37 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     @Optional
     public abstract Property<String> getDialect();
 
-    /**
-     * インデント文字列。
-     *
-     * @return インデント文字列プロパティ
-     */
     @Input
     @Optional
-    public abstract Property<String> getIndent();
+    public abstract Property<Integer> getTabWidth();
 
-    /**
-     * キーワードなどを大文字化するか。
-     *
-     * @return 大文字化設定プロパティ
-     */
     @Input
     @Optional
-    public abstract Property<Boolean> getUppercase();
+    public abstract Property<Boolean> getUseTabs();
+
+    @Input
+    @Optional
+    public abstract Property<String> getKeywordCase();
+
+    @Input
+    @Optional
+    public abstract Property<String> getDataTypeCase();
+
+    @Input
+    @Optional
+    public abstract Property<String> getFunctionCase();
+
+    @Input
+    @Optional
+    public abstract Property<String> getIdentifierCase();
+
+    @Input
+    @Optional
+    public abstract Property<String> getLogicalOperatorNewline();
+
+    @Input
+    @Optional
+    public abstract Property<Integer> getExpressionWidth();
 
     /**
      * 複数SQL文の間に入れる空行数。
@@ -89,14 +103,13 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     @Optional
     public abstract Property<Integer> getLinesBetweenQueries();
 
-    /**
-     * 折返しの目安となる最大桁数。
-     *
-     * @return 最大桁数プロパティ
-     */
     @Input
     @Optional
-    public abstract Property<Integer> getMaxColumnLength();
+    public abstract Property<Boolean> getDenseOperators();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getNewlineBeforeSemicolon();
 
     /**
      * 整形失敗時の扱い。
@@ -157,10 +170,17 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     protected FormatterConfig getFormatterConfig() {
         return new FormatterConfig(
                 getDialect().getOrNull(),
-                getIndent().getOrNull(),
-                getUppercase().getOrNull(),
+                getTabWidth().getOrNull(),
+                getUseTabs().getOrNull(),
+                getKeywordCase().getOrNull(),
+                getDataTypeCase().getOrNull(),
+                getFunctionCase().getOrNull(),
+                getIdentifierCase().getOrNull(),
+                getLogicalOperatorNewline().getOrNull(),
+                getExpressionWidth().getOrNull(),
                 getLinesBetweenQueries().getOrNull(),
-                getMaxColumnLength().getOrNull(),
+                getDenseOperators().getOrNull(),
+                getNewlineBeforeSemicolon().getOrNull(),
                 getErrorPolicy().getOrNull(),
                 getCharset().getOrNull());
     }

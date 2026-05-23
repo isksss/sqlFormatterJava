@@ -13,9 +13,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class SqlFormatterResponsibilityCoverageTest {
     private static final FormatterConfig POSTGRESQL_THROW =
-            new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null);
+            config(ErrorPolicy.THROW);
     private static final FormatterConfig POSTGRESQL_KEEP_INPUT =
-            new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.KEEP_INPUT, null);
+            config(ErrorPolicy.KEEP_INPUT);
 
     private final SqlFormatterService service = new SqlFormatterService();
 
@@ -164,5 +164,23 @@ class SqlFormatterResponsibilityCoverageTest {
 
     private static Arguments arg(String name, String sql) {
         return Arguments.of(name, sql);
+    }
+
+    private static FormatterConfig config(ErrorPolicy errorPolicy) {
+        return new FormatterConfig(
+                "postgresql",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                errorPolicy,
+                null);
     }
 }

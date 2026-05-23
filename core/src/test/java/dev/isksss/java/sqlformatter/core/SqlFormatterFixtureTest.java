@@ -11,7 +11,21 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SqlFormatterFixtureTest {
     private static final FormatterConfig POSTGRESQL =
-            new FormatterConfig("postgresql", null, null, null, null, ErrorPolicy.THROW, null);
+            new FormatterConfig(
+                    "postgresql",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ErrorPolicy.THROW,
+                    null);
 
     private final SqlFormatterService service = new SqlFormatterService();
 

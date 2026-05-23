@@ -36,7 +36,8 @@ class SqlFormatterPluginTest {
                         exclude '**/generated/**'
                     }
                     dialect = 'postgresql'
-                    uppercase = true
+                    keywordCase = 'upper'
+                    tabWidth = 4
                 }
                 """);
     }
@@ -49,7 +50,7 @@ class SqlFormatterPluginTest {
         BuildResult result = runner("sqlFormat").build();
 
         assertEquals(SUCCESS, result.task(":sqlFormat").getOutcome());
-        assertTrue(Files.readString(sql).startsWith("SELECT\n"));
+        assertTrue(Files.readString(sql).startsWith("SELECT\n    id\n"));
         assertEquals("select id from generated_users", Files.readString(excluded));
     }
 
@@ -76,9 +77,9 @@ class SqlFormatterPluginTest {
     @Test
     void formatsFilesWithConfiguredCharset() throws IOException {
         Files.writeString(
-                projectDir.resolve("build.gradle"),
-                Files.readString(projectDir.resolve("build.gradle"))
-                        .replace("uppercase = true", "uppercase = true\n    charset = 'UTF-16'"));
+                        projectDir.resolve("build.gradle"),
+                        Files.readString(projectDir.resolve("build.gradle"))
+                        .replace("keywordCase = 'upper'", "keywordCase = 'upper'\n    charset = 'UTF-16'"));
         Path sql = projectDir.resolve("sql/latin1.sql");
         Files.createDirectories(sql.getParent());
         Files.writeString(sql, "select 'caf\u00e9' as label", StandardCharsets.UTF_16);

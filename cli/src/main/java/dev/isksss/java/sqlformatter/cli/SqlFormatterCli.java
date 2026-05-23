@@ -76,10 +76,17 @@ public final class SqlFormatterCli {
                 Usage: sql-formatter-java [OPTIONS] [SQL_FILE]
                   --config FILE                  JSON formatter config
                   --dialect NAME                 SQL dialect
-                  --indent TEXT                  Indentation string
-                  --uppercase BOOLEAN            Uppercase keywords
+                  --tab-width COUNT              Spaces per indentation level
+                  --use-tabs BOOLEAN             Use tab characters for indentation
+                  --keyword-case CASE            preserve, upper, or lower
+                  --data-type-case CASE          preserve, upper, or lower
+                  --function-case CASE           preserve, upper, or lower
+                  --identifier-case CASE         preserve, upper, or lower
+                  --logical-operator-newline POS before or after
+                  --expression-width COUNT       Max inline expression length
                   --lines-between-queries COUNT  Blank lines between queries
-                  --max-column-length COUNT      Max inline column length
+                  --dense-operators BOOLEAN      Remove spaces around operators
+                  --newline-before-semicolon BOOLEAN
                   --error-policy POLICY          keep-input or throw
                   --charset NAME                 SQL input charset
                 Without SQL_FILE, SQL is read from stdin.
