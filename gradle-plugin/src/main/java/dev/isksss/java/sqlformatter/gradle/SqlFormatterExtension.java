@@ -6,33 +6,86 @@ import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 
+/**
+ * {@code sqlFormatter} Gradle拡張の設定モデル。
+ */
 public abstract class SqlFormatterExtension {
     private final SqlFormatterFileSpec files;
 
+    /**
+     * Gradleのオブジェクトファクトリを使って拡張を作成する。
+     *
+     * @param objects Gradleのオブジェクトファクトリ
+     */
     @Inject
     public SqlFormatterExtension(ObjectFactory objects) {
         files = objects.newInstance(SqlFormatterFileSpec.class);
     }
 
+    /**
+     * SQLファイル選択設定を返す。
+     *
+     * @return SQLファイル選択設定
+     */
     public SqlFormatterFileSpec getFiles() {
         return files;
     }
 
+    /**
+     * SQLファイル選択設定を構成する。
+     *
+     * @param action SQLファイル選択設定へ適用するアクション
+     */
     public void files(Action<? super SqlFormatterFileSpec> action) {
         action.execute(files);
     }
 
+    /**
+     * SQL方言。
+     *
+     * @return SQL方言プロパティ
+     */
     public abstract Property<String> getDialect();
 
+    /**
+     * インデント文字列。
+     *
+     * @return インデント文字列プロパティ
+     */
     public abstract Property<String> getIndent();
 
+    /**
+     * キーワードなどを大文字化するか。
+     *
+     * @return 大文字化設定プロパティ
+     */
     public abstract Property<Boolean> getUppercase();
 
+    /**
+     * 複数SQL文の間に入れる空行数。
+     *
+     * @return 空行数プロパティ
+     */
     public abstract Property<Integer> getLinesBetweenQueries();
 
+    /**
+     * 折返しの目安となる最大桁数。
+     *
+     * @return 最大桁数プロパティ
+     */
     public abstract Property<Integer> getMaxColumnLength();
 
+    /**
+     * 整形失敗時の扱い。
+     *
+     * @return エラー方針プロパティ
+     */
     public abstract Property<ErrorPolicy> getErrorPolicy();
 
+    /**
+     * SQLファイルの読み書きに使う文字セット。
+     *
+     * @return 文字セット名プロパティ
+     */
     public abstract Property<String> getCharset();
 }

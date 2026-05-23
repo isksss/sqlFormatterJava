@@ -9,8 +9,19 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 
+/**
+ * 選択されたSQLファイルが整形済みか検証するGradleタスク。
+ */
 @DisableCachingByDefault(because = "Checks current SQL source file contents.")
 public abstract class SqlCheckTask extends AbstractSqlFormatterTask {
+    /**
+     * SQL整形チェックタスクを作成する。
+     */
+    public SqlCheckTask() {}
+
+    /**
+     * 整形が必要なSQLファイルが残っていないか検証する。
+     */
     @TaskAction
     public void check() {
         List<File> unformatted = new ArrayList<>();

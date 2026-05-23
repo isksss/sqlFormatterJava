@@ -18,55 +18,128 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 
+/**
+ * SQL整形タスクで共通利用する入力設定と補助処理を持つ基底タスク。
+ */
 public abstract class AbstractSqlFormatterTask extends DefaultTask {
     private final SqlFormatterService formatter = new SqlFormatterService();
 
+    /**
+     * SQL整形タスクの共通基底を作成する。
+     */
+    public AbstractSqlFormatterTask() {}
+
+    /**
+     * SQLファイル探索の起点パス。
+     *
+     * @return 起点パス一覧
+     */
     @Input
     public abstract ListProperty<String> getSourcePaths();
 
+    /**
+     * 整形対象に含めるファイルパターン。
+     *
+     * @return includeパターン一覧
+     */
     @Input
     public abstract ListProperty<String> getIncludes();
 
+    /**
+     * 整形対象から除外するファイルパターン。
+     *
+     * @return excludeパターン一覧
+     */
     @Input
     public abstract ListProperty<String> getExcludes();
 
+    /**
+     * SQL方言。
+     *
+     * @return SQL方言プロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getDialect();
 
+    /**
+     * インデント文字列。
+     *
+     * @return インデント文字列プロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getIndent();
 
+    /**
+     * キーワードなどを大文字化するか。
+     *
+     * @return 大文字化設定プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getUppercase();
 
+    /**
+     * 複数SQL文の間に入れる空行数。
+     *
+     * @return 空行数プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Integer> getLinesBetweenQueries();
 
+    /**
+     * 折返しの目安となる最大桁数。
+     *
+     * @return 最大桁数プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Integer> getMaxColumnLength();
 
+    /**
+     * 整形失敗時の扱い。
+     *
+     * @return エラー方針プロパティ
+     */
     @Input
     @Optional
     public abstract Property<ErrorPolicy> getErrorPolicy();
 
+    /**
+     * SQLファイルの読み書きに使う文字セット。
+     *
+     * @return 文字セット名プロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getCharset();
 
+    /**
+     * Gradleが追跡する整形対象SQLファイル。
+     *
+     * @return SQLファイル集合
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
     public abstract ConfigurableFileCollection getSqlFiles();
 
+    /**
+     * SQL整形サービスを返す。
+     *
+     * @return SQL整形サービス
+     */
     @Internal
     protected SqlFormatterService getFormatter() {
         return formatter;
     }
 
+    /**
+     * 実際に処理するSQLファイルを返す。
+     *
+     * @return 選択済みSQLファイル一覧
+     */
     protected List<File> selectedSqlFiles() {
         List<String> sourcePaths = getSourcePaths().getOrElse(List.of());
         if (sourcePaths.isEmpty()) {
@@ -75,6 +148,11 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
         return getSqlFiles().getFiles().stream().sorted().toList();
     }
 
+    /**
+     * タスク入力から整形設定を作成する。
+     *
+     * @return 整形設定
+     */
     @Internal
     protected FormatterConfig getFormatterConfig() {
         return new FormatterConfig(
@@ -87,6 +165,11 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
                 getCharset().getOrNull());
     }
 
+    /**
+     * SQLファイルの読み書きに使う文字セットを返す。
+     *
+     * @return 文字セット
+     */
     @Internal
     protected Charset getSqlCharset() {
         try {

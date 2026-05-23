@@ -4,7 +4,20 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileTree;
 
+/**
+ * SQL整形用のGradle拡張とタスクを登録するプラグイン。
+ */
 public final class SqlFormatterPlugin implements Plugin<Project> {
+    /**
+     * SQL整形用Gradleプラグインを作成する。
+     */
+    public SqlFormatterPlugin() {}
+
+    /**
+     * {@code sqlFormatter} 拡張、{@code sqlFormat} タスク、{@code sqlCheck} タスクを登録する。
+     *
+     * @param project 適用先のGradleプロジェクト
+     */
     @Override
     public void apply(Project project) {
         SqlFormatterExtension extension =

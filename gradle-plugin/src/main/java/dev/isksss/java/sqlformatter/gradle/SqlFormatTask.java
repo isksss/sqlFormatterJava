@@ -7,8 +7,19 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 
+/**
+ * 選択されたSQLファイルをその場で整形するGradleタスク。
+ */
 @DisableCachingByDefault(because = "Formats SQL source files in place.")
 public abstract class SqlFormatTask extends AbstractSqlFormatterTask {
+    /**
+     * SQL整形タスクを作成する。
+     */
+    public SqlFormatTask() {}
+
+    /**
+     * SQLファイルを整形し、差分がある場合だけ書き戻す。
+     */
     @TaskAction
     public void format() {
         for (File file : selectedSqlFiles()) {

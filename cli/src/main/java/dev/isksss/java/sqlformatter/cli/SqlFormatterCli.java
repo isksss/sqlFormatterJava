@@ -8,6 +8,9 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+/**
+ * 標準入力またはSQLファイルを読み取り、整形結果を標準出力へ書き出すCLIエントリポイント。
+ */
 public final class SqlFormatterCli {
     private final JsonConfigLoader configLoader;
     private final SqlFormatterService formatter;
@@ -17,6 +20,11 @@ public final class SqlFormatterCli {
         this.formatter = formatter;
     }
 
+    /**
+     * CLIを実行する。
+     *
+     * @param args コマンドライン引数
+     */
     public static void main(String[] args) {
         int exitCode = new SqlFormatterCli(new JsonConfigLoader(), new SqlFormatterService())
                 .run(args, System.in, System.out, System.err);
