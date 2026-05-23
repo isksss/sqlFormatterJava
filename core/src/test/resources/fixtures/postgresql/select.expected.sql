@@ -4,7 +4,8 @@ select
   coalesce(p.profile ->> 'bio', '') as bio
 from
   users u
-  left join profiles p on p.user_id = u.id
+  left join profiles p
+    on p.user_id = u.id
 where
   u.active = true
   and u.created_at >= '2026-01-01'

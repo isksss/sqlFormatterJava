@@ -1,4 +1,5 @@
-with ranked as(
+with
+  ranked as (
   select
     account_id,
     amount,
