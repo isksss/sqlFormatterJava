@@ -1,0 +1,44 @@
+name: Publish Gradle Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run release checks
+        run: ./gradlew check --rerun-tasks
+
+      - name: Build Rust core executable
+        run: cargo build -p sql-formatter-core
+
+      - name: Run release tests with Rust backend
+        env:
+          SQL_FORMATTER_RUST_CORE: ${{ github.workspace }}/target/debug/sql-formatter-core
+        run: ./gradlew test --rerun-tasks
+
+      - name: Publish Gradle plugin
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ./gradlew :gradle-plugin:publishPlugins \
+            -PreleaseVersion="${VERSION}" \
+            -Pgradle.publish.key="${GRADLE_PUBLISH_KEY}" \
+            -Pgradle.publish.secret="${GRADLE_PUBLISH_SECRET}"

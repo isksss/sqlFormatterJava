@@ -65,5 +65,6 @@ public final class SqlFormatterPlugin implements Plugin<Project> {
         task.getNewlineBeforeSemicolon().set(extension.getNewlineBeforeSemicolon());
         task.getErrorPolicy().set(extension.getErrorPolicy());
         task.getCharset().set(extension.getCharset());
+        task.getRustCorePath().set(extension.getRustCorePath());
     }
 }

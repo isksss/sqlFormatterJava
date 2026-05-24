@@ -35,6 +35,7 @@ sqlFormatter {
     newlineBeforeSemicolon = false
     errorPolicy = dev.isksss.java.sqlformatter.core.ErrorPolicy.KEEP_INPUT
     charset = 'UTF-8'
+    rustCorePath = 'target/debug/sql-formatter-core'
 }
 ```
 
@@ -89,10 +90,85 @@ sql-formatter-java --help
 sql-formatter-java --config sql-formatter.json --keyword-case upper query.sql
 ```
 
+To route formatting through the experimental Rust core, pass the executable
+path explicitly.
+
+```bash
+cargo build -p sql-formatter-core
+sql-formatter-java --rust-core target/debug/sql-formatter-core query.sql
+```
+
 ## Development
 
 ```bash
-./gradlew test
+./gradlew check
+cargo test
+cd vscode-extension && npm ci && npm run compile:with-wasm
 ```
 
 Native executables require a GraalVM JDK with Native Image support.
+
+`./gradlew check` runs the Java/Gradle plugin tests and the Rust core test
+matrix. The Rust matrix covers supported dialect names and formatter option
+combinations for indentation, casing, logical operator placement, expression
+width, query spacing, dense operators, and semicolon placement.
+
+To verify every existing Java test through the Rust backend, build the Rust
+executable and set `SQL_FORMATTER_RUST_CORE`.
+
+```bash
+cargo build -p sql-formatter-core
+SQL_FORMATTER_RUST_CORE="$PWD/target/debug/sql-formatter-core" ./gradlew test --rerun-tasks
+```
+
+CLI and Gradle plugin tests that require an explicit Rust executable use
+`SQL_FORMATTER_TEST_RUST_CORE`.
+
+```bash
+SQL_FORMATTER_TEST_RUST_CORE="$PWD/target/debug/sql-formatter-core" \
+  ./gradlew :cli:test :gradle-plugin:test --tests '*RustCoreBackend*' --rerun-tasks
+```
+
+## CI and release
+
+GitHub Actions runs the following checks on pull requests and pushes to `main`.
+
+- `./gradlew check --rerun-tasks`
+- `cargo build -p sql-formatter-core`
+- Rust backend integration tests for CLI and Gradle plugin
+- full Java test suite with `SQL_FORMATTER_RUST_CORE`
+- VS Code extension compile with bundled Wasm
+
+Pushing a tag named `v*` runs the Gradle Plugin Portal publish workflow. Set
+these repository secrets before publishing.
+
+- `GRADLE_PUBLISH_KEY`
+- `GRADLE_PUBLISH_SECRET`
+
+The published Gradle plugin version is derived from the tag by removing the
+leading `v`.
+
+## Portable Rust/Wasm core
+
+The repository now contains an experimental Rust formatter core in
+`rust-core`. It is not yet a full replacement for the Java core; it establishes
+the shared API boundary and Wasm build path for VS Code and future Java
+integration.
+
+```bash
+cargo test
+cargo build -p sql-formatter-core --target wasm32-unknown-unknown --release
+```
+
+## VS Code extension
+
+The experimental VS Code extension lives in `vscode-extension`. It registers a
+SQL document/range formatter and loads `dist/wasm/sql_formatter_core.wasm` when
+present. In development, it falls back to a TypeScript shim if the Wasm file is
+not built yet.
+
+```bash
+cd vscode-extension
+npm install
+npm run compile:with-wasm
+```

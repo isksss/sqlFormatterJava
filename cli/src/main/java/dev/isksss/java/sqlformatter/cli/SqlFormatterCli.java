@@ -41,7 +41,7 @@ public final class SqlFormatterCli {
             String sql = arguments.sqlFile() == null
                     ? new String(stdin.readAllBytes(), charset)
                     : Files.readString(arguments.sqlFile(), charset);
-            stdout.print(formatter.format(sql, config));
+            stdout.print(format(arguments, sql, config));
             return 0;
         } catch (HelpRequestedException exception) {
             stdout.print(usage());
@@ -75,6 +75,7 @@ public final class SqlFormatterCli {
         return """
                 Usage: sql-formatter-java [OPTIONS] [SQL_FILE]
                   --config FILE                  JSON formatter config
+                  --rust-core FILE               Rust formatter core executable
                   --dialect NAME                 SQL dialect
                   --tab-width COUNT              Spaces per indentation level
                   --use-tabs BOOLEAN             Use tab characters for indentation
@@ -91,5 +92,22 @@ public final class SqlFormatterCli {
                   --charset NAME                 SQL input charset
                 Without SQL_FILE, SQL is read from stdin.
                 """;
+    }
+
+    private String format(CliArguments arguments, String sql, FormatterConfig config) {
+        if (arguments.rustCorePath() == null) {
+            return formatter.format(sql, config);
+        }
+        String previous = System.getProperty("sqlFormatter.rustCorePath");
+        try {
+            System.setProperty("sqlFormatter.rustCorePath", arguments.rustCorePath().toString());
+            return formatter.format(sql, config);
+        } finally {
+            if (previous == null) {
+                System.clearProperty("sqlFormatter.rustCorePath");
+            } else {
+                System.setProperty("sqlFormatter.rustCorePath", previous);
+            }
+        }
     }
 }

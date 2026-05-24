@@ -1,0 +1,15 @@
+[package]
+name = "sql-formatter-core"
+version = "0.1.0"
+edition = "2021"
+description = "Portable SQL formatter core for Java, CLI, and VS Code integrations."
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+wasm = []
+
+[dependencies]

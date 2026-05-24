@@ -17,10 +17,12 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * SQL整形タスクで共通利用する入力設定と補助処理を持つ基底タスク。
  */
+@DisableCachingByDefault(because = "Base class for SQL formatter tasks; subclasses define task behavior.")
 public abstract class AbstractSqlFormatterTask extends DefaultTask {
     private final SqlFormatterService formatter = new SqlFormatterService();
 
@@ -180,6 +182,15 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     public abstract Property<String> getCharset();
 
     /**
+     * Rust formatter core実行ファイルのパス。
+     *
+     * @return Rust core実行ファイルパス
+     */
+    @Input
+    @Optional
+    public abstract Property<String> getRustCorePath();
+
+    /**
      * Gradleが追跡する整形対象SQLファイル。
      *
      * @return SQLファイル集合
@@ -246,6 +257,30 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
             return Charset.forName(getFormatterConfig().mergeOver(FormatterConfig.defaults()).charset());
         } catch (RuntimeException exception) {
             throw new GradleException("Unsupported sqlFormatter charset.", exception);
+        }
+    }
+
+    /**
+     * 設定されたbackendでSQLを整形する。
+     *
+     * @param sql 整形対象SQL
+     * @return 整形後SQL
+     */
+    protected String formatSql(String sql) {
+        String rustCorePath = getRustCorePath().getOrNull();
+        if (rustCorePath == null || rustCorePath.isBlank()) {
+            return getFormatter().format(sql, getFormatterConfig());
+        }
+        String previous = System.getProperty("sqlFormatter.rustCorePath");
+        try {
+            System.setProperty("sqlFormatter.rustCorePath", rustCorePath);
+            return getFormatter().format(sql, getFormatterConfig());
+        } finally {
+            if (previous == null) {
+                System.clearProperty("sqlFormatter.rustCorePath");
+            } else {
+                System.setProperty("sqlFormatter.rustCorePath", previous);
+            }
         }
     }
 }

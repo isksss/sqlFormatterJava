@@ -24,3 +24,27 @@ subprojects {
         }
     }
 }
+
+tasks.register('rustTest', Exec) {
+    group = 'verification'
+    description = 'Runs Rust core tests, including dialect and option matrix coverage.'
+    commandLine 'cargo', 'test'
+}
+
+tasks.register('rustBuild', Exec) {
+    group = 'build'
+    description = 'Builds the Rust formatter core executable.'
+    commandLine 'cargo', 'build', '-p', 'sql-formatter-core'
+}
+
+tasks.register('vscodeExtensionCompile', Exec) {
+    group = 'verification'
+    description = 'Compiles the VS Code extension and bundled Wasm formatter core.'
+    workingDir file('vscode-extension')
+    commandLine 'npm', 'run', 'compile:with-wasm'
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('rustTest')
+    dependsOn ':core:test', ':cli:test', ':gradle-plugin:test'
+}

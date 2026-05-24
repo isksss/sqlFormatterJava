@@ -28,7 +28,7 @@ public abstract class SqlCheckTask extends AbstractSqlFormatterTask {
         for (File file : selectedSqlFiles()) {
             try {
                 String input = Files.readString(file.toPath(), getSqlCharset());
-                if (!input.equals(getFormatter().format(input, getFormatterConfig()))) {
+                if (!input.equals(formatSql(input))) {
                     unformatted.add(file);
                 }
             } catch (IOException exception) {

@@ -2,3 +2,8 @@
 build/
 **/build/
 .mise.local.toml
+target/
+rust-core/pkg/
+vscode-extension/node_modules/
+vscode-extension/dist/
+vscode-extension/*.vsix

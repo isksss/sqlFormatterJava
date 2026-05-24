@@ -14,6 +14,7 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.opentest4j.TestAbortedException;
 
 class SqlFormatterPluginTest {
     @TempDir
@@ -90,6 +91,62 @@ class SqlFormatterPluginTest {
         assertTrue(Files.readString(sql, StandardCharsets.UTF_16).contains("'caf\u00e9'"));
     }
 
+    @Test
+    void canFormatWithRustCoreBackend() throws IOException {
+        Files.writeString(
+                projectDir.resolve("build.gradle"),
+                Files.readString(projectDir.resolve("build.gradle"))
+                        .replace(
+                                "tabWidth = 4",
+                                "tabWidth = 2\n    rustCorePath = '" + rustCorePath().replace("\\", "\\\\") + "'"));
+        Path sql = write("sql/query.sql", "select id from users");
+
+        BuildResult result = runner("sqlFormat").build();
+
+        assertEquals(SUCCESS, result.task(":sqlFormat").getOutcome());
+        assertEquals(
+                """
+                SELECT
+                  id
+                FROM
+                  users
+                """.stripTrailing(),
+                Files.readString(sql));
+    }
+
+    @Test
+    void rustCoreBackendReceivesFormatterOptions() throws IOException {
+        Files.writeString(
+                projectDir.resolve("build.gradle"),
+                Files.readString(projectDir.resolve("build.gradle"))
+                        .replace(
+                                "tabWidth = 4",
+                                """
+                                tabWidth = 2
+                                    functionCase = 'upper'
+                                    identifierCase = 'upper'
+                                    denseOperators = true
+                                    newlineBeforeSemicolon = true
+                                    rustCorePath = '"""
+                                        + rustCorePath().replace("\\", "\\\\") + "'"));
+        Path sql = write("sql/query.sql", "select coalesce(name,'x') label from users where a+b>=10;");
+
+        BuildResult result = runner("sqlFormat").build();
+
+        assertEquals(SUCCESS, result.task(":sqlFormat").getOutcome());
+        assertEquals(
+                """
+                SELECT
+                  COALESCE(NAME, 'x') LABEL
+                FROM
+                  USERS
+                WHERE
+                  A+B>=10
+                ;
+                """.stripTrailing(),
+                Files.readString(sql));
+    }
+
     private Path write(String relative, String contents) throws IOException {
         Path path = projectDir.resolve(relative);
         Files.createDirectories(path.getParent());
@@ -101,5 +158,13 @@ class SqlFormatterPluginTest {
                 .withProjectDir(projectDir.toFile())
                 .withPluginClasspath()
                 .withArguments(task, "--stacktrace", "--configuration-cache");
+    }
+
+    private String rustCorePath() {
+        String path = System.getenv("SQL_FORMATTER_TEST_RUST_CORE");
+        if (path == null || path.isBlank()) {
+            throw new TestAbortedException("SQL_FORMATTER_TEST_RUST_CORE is not set.");
+        }
+        return path;
     }
 }

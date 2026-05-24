@@ -21,11 +21,18 @@ public final class SqlFormatterService {
     private static final Pattern JOIN_ON_PATTERN = Pattern.compile(
             "(?i)^(\\s*)((?:(?:left|right|full)(?:\\s+outer)?|inner|cross)?\\s*join\\b.+?)\\s+on\\s+(.+)$");
     private static final Pattern AND_CONDITION_PATTERN = Pattern.compile("(?i)^\\s*and\\s+(.+)$");
+    private final RustCoreFormatterClient rustCoreFormatter;
 
     /**
      * SQL整形サービスを作成する。
      */
-    public SqlFormatterService() {}
+    public SqlFormatterService() {
+        this(new RustCoreFormatterClient());
+    }
+
+    SqlFormatterService(RustCoreFormatterClient rustCoreFormatter) {
+        this.rustCoreFormatter = rustCoreFormatter;
+    }
 
     /**
      * 指定された設定でSQLを整形する。
@@ -40,6 +47,10 @@ public final class SqlFormatterService {
      */
     public String format(String sql, FormatterConfig config) {
         try {
+            java.util.Optional<String> rustFormatted = rustCoreFormatter.format(sql, config);
+            if (rustFormatted.isPresent()) {
+                return rustFormatted.get();
+            }
             FormatConfig formatConfig = toEngineConfig(config);
             String formatted;
             if (config.dialect() == null || config.dialect().isBlank()) {

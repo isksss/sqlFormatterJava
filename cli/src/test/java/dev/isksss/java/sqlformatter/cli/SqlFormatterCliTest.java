@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.opentest4j.TestAbortedException;
 
 class SqlFormatterCliTest {
     @TempDir
@@ -132,6 +133,54 @@ class SqlFormatterCliTest {
         assertTrue(result.stderr().contains("Failed to format SQL"));
     }
 
+    @Test
+    void canFormatWithRustCoreBackend() {
+        Result result = run(new String[] {"--rust-core", rustCorePath()}, "select id from users");
+
+        assertEquals(0, result.exitCode());
+        assertEquals(
+                """
+                select
+                  id
+                from
+                  users
+                """,
+                result.stdout() + "\n");
+    }
+
+    @Test
+    void rustCoreBackendReceivesFormatterOptions() {
+        Result result = run(
+                new String[] {
+                    "--rust-core",
+                    rustCorePath(),
+                    "--keyword-case",
+                    "upper",
+                    "--function-case",
+                    "upper",
+                    "--identifier-case",
+                    "upper",
+                    "--dense-operators",
+                    "true",
+                    "--newline-before-semicolon",
+                    "true"
+                },
+                "select coalesce(name,'x') label from users where a+b>=10;");
+
+        assertEquals(0, result.exitCode());
+        assertEquals(
+                """
+                SELECT
+                  COALESCE(NAME, 'x') LABEL
+                FROM
+                  USERS
+                WHERE
+                  A+B>=10
+                ;
+                """,
+                result.stdout() + "\n");
+    }
+
     private Result run(String[] args, String stdin) {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
@@ -142,6 +191,14 @@ class SqlFormatterCliTest {
                         new PrintStream(stdout, true, StandardCharsets.UTF_8),
                         new PrintStream(stderr, true, StandardCharsets.UTF_8));
         return new Result(exitCode, stdout.toString(StandardCharsets.UTF_8), stderr.toString(StandardCharsets.UTF_8));
+    }
+
+    private String rustCorePath() {
+        String path = System.getenv("SQL_FORMATTER_TEST_RUST_CORE");
+        if (path == null || path.isBlank()) {
+            throw new TestAbortedException("SQL_FORMATTER_TEST_RUST_CORE is not set.");
+        }
+        return path;
     }
 
     private record Result(int exitCode, String stdout, String stderr) {}

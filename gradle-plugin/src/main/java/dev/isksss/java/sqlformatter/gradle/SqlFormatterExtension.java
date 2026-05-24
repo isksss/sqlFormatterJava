@@ -137,4 +137,11 @@ public abstract class SqlFormatterExtension {
      * @return 文字セット名プロパティ
      */
     public abstract Property<String> getCharset();
+
+    /**
+     * Rust formatter core実行ファイルのパス。
+     *
+     * @return Rust core実行ファイルパス
+     */
+    public abstract Property<String> getRustCorePath();
 }

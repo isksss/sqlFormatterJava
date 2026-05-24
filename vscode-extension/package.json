@@ -1,0 +1,85 @@
+{
+  "name": "sql-formatter-java-vscode",
+  "displayName": "SQL Formatter Java",
+  "description": "Formats SQL documents with the portable sqlFormatterJava core.",
+  "version": "0.1.0",
+  "publisher": "isksss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isksss/sqlFormatterJava.git",
+    "directory": "vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Formatters"],
+  "activationEvents": [
+    "onLanguage:sql",
+    "onCommand:sqlFormatterJava.formatDocument"
+  ],
+  "browser": "./dist/web/extension.js",
+  "main": "./dist/node/extension.js",
+  "capabilities": {
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "sqlFormatterJava.formatDocument",
+        "title": "SQL Formatter Java: Format Document"
+      }
+    ],
+    "configuration": {
+      "title": "SQL Formatter Java",
+      "properties": {
+        "sqlFormatterJava.dialect": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "SQL dialect. Null uses the formatter default."
+        },
+        "sqlFormatterJava.tabWidth": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "description": "Spaces per indentation level."
+        },
+        "sqlFormatterJava.useTabs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use tab characters for indentation."
+        },
+        "sqlFormatterJava.keywordCase": {
+          "type": "string",
+          "default": "preserve",
+          "enum": ["preserve", "upper", "lower"],
+          "description": "Keyword casing."
+        },
+        "sqlFormatterJava.logicalOperatorNewline": {
+          "type": "string",
+          "default": "before",
+          "enum": ["before", "after"],
+          "description": "Logical operator newline position."
+        },
+        "sqlFormatterJava.errorPolicy": {
+          "type": "string",
+          "default": "keep-input",
+          "enum": ["keep-input", "throw"],
+          "description": "Behavior when formatting fails."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "npm run compile:web && npm run compile:node",
+    "compile:web": "tsc -p tsconfig.web.json",
+    "compile:node": "tsc -p tsconfig.node.json",
+    "compile:with-wasm": "npm run build:wasm && npm run compile",
+    "build:wasm": "cargo build --manifest-path ../Cargo.toml -p sql-formatter-core --target wasm32-unknown-unknown --release && mkdir -p dist/wasm && cp ../target/wasm32-unknown-unknown/release/sql_formatter_core.wasm dist/wasm/sql_formatter_core.wasm"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.6.0",
+    "typescript": "^5.9.0"
+  }
+}

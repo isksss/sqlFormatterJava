@@ -5,10 +5,11 @@ import dev.isksss.java.sqlformatter.core.ErrorPolicy;
 import java.nio.file.Path;
 import java.util.Locale;
 
-record CliArguments(Path configFile, Path sqlFile, FormatterConfig overrides) {
+record CliArguments(Path configFile, Path sqlFile, Path rustCorePath, FormatterConfig overrides) {
     static CliArguments parse(String[] args) {
         Path configFile = null;
         Path sqlFile = null;
+        Path rustCorePath = null;
         String dialect = null;
         Integer tabWidth = null;
         Boolean useTabs = null;
@@ -28,6 +29,7 @@ record CliArguments(Path configFile, Path sqlFile, FormatterConfig overrides) {
             String argument = args[index];
             switch (argument) {
                 case "--config" -> configFile = Path.of(nextValue(args, ++index, argument));
+                case "--rust-core" -> rustCorePath = Path.of(nextValue(args, ++index, argument));
                 case "--dialect" -> dialect = nextValue(args, ++index, argument);
                 case "--tab-width" -> tabWidth = parseInteger(nextValue(args, ++index, argument), argument);
                 case "--use-tabs" -> useTabs = Boolean.parseBoolean(nextValue(args, ++index, argument));
@@ -60,6 +62,7 @@ record CliArguments(Path configFile, Path sqlFile, FormatterConfig overrides) {
         return new CliArguments(
                 configFile,
                 sqlFile,
+                rustCorePath,
                 new FormatterConfig(
                         dialect,
                         tabWidth,

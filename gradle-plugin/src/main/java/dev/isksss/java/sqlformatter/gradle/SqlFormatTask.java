@@ -26,7 +26,7 @@ public abstract class SqlFormatTask extends AbstractSqlFormatterTask {
             try {
                 var charset = getSqlCharset();
                 String input = Files.readString(file.toPath(), charset);
-                String formatted = getFormatter().format(input, getFormatterConfig());
+                String formatted = formatSql(input);
                 if (!input.equals(formatted)) {
                     Files.writeString(file.toPath(), formatted, charset);
                 }
