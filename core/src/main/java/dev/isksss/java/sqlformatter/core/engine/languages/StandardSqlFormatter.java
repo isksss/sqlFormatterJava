@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the Standard SQL dialect. */
 public class StandardSqlFormatter extends AbstractFormatter {
 
   // https://jakewheat.github.io/sql-overview/sql-2008-foundation-grammar.html#reserved-word
@@ -384,6 +385,11 @@ public class StandardSqlFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a Standard SQL formatter.
+   *
+   * @param cfg format configuration
+   */
   public StandardSqlFormatter(FormatConfig cfg) {
     super(cfg);
   }

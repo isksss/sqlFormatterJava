@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/** Registry of supported SQL string literal patterns. */
 public class StringLiteral {
+  /** Creates a string literal registry instance. */
+  public StringLiteral() {}
+
   public static final String BACK_QUOTE = "``";
   public static final String DOUBLE_QUOTE = "\"\"";
   public static final String U_DOUBLE_QUOTE = "U&\"\"";
@@ -27,6 +31,12 @@ public class StringLiteral {
                 .collect(Collectors.toMap(Preset::getKey, Preset::getRegex)));
   }
 
+  /**
+   * Returns a string literal regular expression by key.
+   *
+   * @param key string literal key
+   * @return regular expression
+   */
   public static String get(String key) {
     return literals.get(key);
   }

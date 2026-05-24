@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the Microsoft T-SQL dialect. */
 public class TSqlFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -268,6 +269,11 @@ public class TSqlFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a Microsoft T-SQL formatter.
+   *
+   * @param cfg format configuration
+   */
   public TSqlFormatter(FormatConfig cfg) {
     super(cfg);
   }

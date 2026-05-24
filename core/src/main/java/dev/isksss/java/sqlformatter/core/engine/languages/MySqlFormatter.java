@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the MySQL dialect. */
 public class MySqlFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -343,6 +344,11 @@ public class MySqlFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a MySQL formatter.
+   *
+   * @param cfg format configuration
+   */
   public MySqlFormatter(FormatConfig cfg) {
     super(cfg);
   }

@@ -62,34 +62,74 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     @Optional
     public abstract Property<String> getDialect();
 
+    /**
+     * スペースインデントの幅。
+     *
+     * @return インデント幅プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Integer> getTabWidth();
 
+    /**
+     * インデントにタブ文字を使うか。
+     *
+     * @return タブ利用フラグプロパティ
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getUseTabs();
 
+    /**
+     * SQLキーワードの大文字小文字。
+     *
+     * @return キーワードケースプロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getKeywordCase();
 
+    /**
+     * データ型名の大文字小文字。
+     *
+     * @return データ型ケースプロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getDataTypeCase();
 
+    /**
+     * 関数名の大文字小文字。
+     *
+     * @return 関数名ケースプロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getFunctionCase();
 
+    /**
+     * 非引用識別子の大文字小文字。
+     *
+     * @return 識別子ケースプロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getIdentifierCase();
 
+    /**
+     * 論理演算子の改行位置。
+     *
+     * @return 論理演算子改行位置プロパティ
+     */
     @Input
     @Optional
     public abstract Property<String> getLogicalOperatorNewline();
 
+    /**
+     * 括弧内式を1行に保つ最大幅。
+     *
+     * @return 式幅プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Integer> getExpressionWidth();
@@ -103,10 +143,20 @@ public abstract class AbstractSqlFormatterTask extends DefaultTask {
     @Optional
     public abstract Property<Integer> getLinesBetweenQueries();
 
+    /**
+     * 演算子の周囲の空白を詰めるか。
+     *
+     * @return 演算子空白制御プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDenseOperators();
 
+    /**
+     * セミコロンを独立行に置くか。
+     *
+     * @return セミコロン改行プロパティ
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getNewlineBeforeSemicolon();

@@ -115,6 +115,47 @@ class SqlFormatterServiceTest {
     }
 
     @Test
+    void preservesParenthesizedJoinConditionStructure() {
+        String formatted = service.format(
+                "select a.id from table_a a join table_b b on (a.id=b.id and a.kind=b.kind) and a.status=b.status",
+                config("postgresql", ErrorPolicy.THROW));
+
+        assertEquals(
+                """
+                select
+                  a.id
+                from
+                  table_a a
+                  join table_b b
+                    on (
+                    a.id = b.id
+                    and a.kind = b.kind
+                  )
+                  and a.status = b.status
+                """,
+                formatted + "\n");
+    }
+
+    @Test
+    void doesNotSplitJoinOnAndInsideQuotedIdentifiers() {
+        String formatted = service.format(
+                "select a.id from table_a a join table_b b on a.\"and\"=b.\"and\" and a.id=b.id",
+                config("postgresql", ErrorPolicy.THROW));
+
+        assertEquals(
+                """
+                select
+                  a.id
+                from
+                  table_a a
+                  join table_b b
+                    on a."and" = b."and"
+                    and a.id = b.id
+                """,
+                formatted + "\n");
+    }
+
+    @Test
     void keepsCteOpeningAndJoinWrappingIdempotent() {
         FormatterConfig config = config("postgresql", ErrorPolicy.THROW);
         String formatted = service.format(

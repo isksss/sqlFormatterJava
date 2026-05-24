@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the Amazon Redshift dialect. */
 public class RedshiftFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -393,6 +394,11 @@ public class RedshiftFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates an Amazon Redshift formatter.
+   *
+   * @param cfg format configuration
+   */
   public RedshiftFormatter(FormatConfig cfg) {
     super(cfg);
   }

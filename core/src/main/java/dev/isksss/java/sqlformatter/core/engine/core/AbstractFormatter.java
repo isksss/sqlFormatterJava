@@ -7,16 +7,21 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
+/** Base formatter that applies token-based SQL formatting rules. */
 public abstract class AbstractFormatter implements DialectConfigurator {
   private final FormatConfig cfg;
   private final Indentation indentation;
   private final InlineBlock inlineBlock;
   private final Params params;
+
+  /** Previously processed reserved token. */
   protected Token previousReservedToken;
   private JSLikeList<Token> tokens;
   private int index;
 
   /**
+   * Creates a formatter with the given format configuration.
+   *
    * @param cfg FormatConfig
    */
   public AbstractFormatter(FormatConfig cfg) {
@@ -28,6 +33,11 @@ public abstract class AbstractFormatter implements DialectConfigurator {
     this.index = 0;
   }
 
+  /**
+   * Creates a tokenizer for this formatter dialect.
+   *
+   * @return tokenizer
+   */
   public Tokenizer tokenizer() {
     return new Tokenizer(this.dialectConfig());
   }
@@ -287,18 +297,40 @@ public abstract class AbstractFormatter implements DialectConfigurator {
     return query + this.indentation.getIndent();
   }
 
+  /**
+   * Returns the token immediately before the current token.
+   *
+   * @return previous token, or {@code null} when absent
+   */
   protected Token tokenLookBehind() {
     return this.tokenLookBehind(1);
   }
 
+  /**
+   * Returns the token n positions before the current token.
+   *
+   * @param n number of positions to look behind
+   * @return previous token, or {@code null} when absent
+   */
   protected Token tokenLookBehind(int n) {
     return this.tokens.get(this.index - n);
   }
 
+  /**
+   * Returns the token immediately after the current token.
+   *
+   * @return next token, or {@code null} when absent
+   */
   protected Token tokenLookAhead() {
     return this.tokenLookAhead(1);
   }
 
+  /**
+   * Returns the token n positions after the current token.
+   *
+   * @param n number of positions to look ahead
+   * @return next token, or {@code null} when absent
+   */
   protected Token tokenLookAhead(int n) {
     return this.tokens.get(this.index + n);
   }

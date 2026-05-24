@@ -7,7 +7,10 @@ import java.util.Map;
 /** Configurations for formatting. */
 public class FormatConfig {
 
+  /** Default indentation string. */
   public static final String DEFAULT_INDENT = "  ";
+
+  /** Default maximum column length for inline expressions. */
   public static final int DEFAULT_COLUMN_MAX_LENGTH = 50;
 
   public final String indent;
@@ -59,7 +62,7 @@ public class FormatConfig {
     return new FormatConfigBuilder();
   }
 
-  /** FormatConfigBuilder */
+  /** Builds {@link FormatConfig} instances. */
   public static class FormatConfigBuilder {
     private String indent = DEFAULT_INDENT;
     private int maxColumnLength = DEFAULT_COLUMN_MAX_LENGTH;
@@ -74,8 +77,15 @@ public class FormatConfig {
     private boolean newlineBeforeSemicolon;
     private boolean skipWhitespaceNearBlockParentheses;
 
+    /** Creates an empty builder with default values. */
     FormatConfigBuilder() {}
 
+    /**
+     * Sets the number of spaces per indentation level.
+     *
+     * @param tabWidth number of spaces per indentation level
+     * @return this builder
+     */
     public FormatConfigBuilder tabWidth(int tabWidth) {
       if (tabWidth < 1) {
         throw new IllegalArgumentException("tabWidth must be greater than zero.");
@@ -84,6 +94,12 @@ public class FormatConfig {
       return this;
     }
 
+    /**
+     * Enables tab indentation when requested.
+     *
+     * @param useTabs whether tab characters should be used for indentation
+     * @return this builder
+     */
     public FormatConfigBuilder useTabs(boolean useTabs) {
       if (useTabs) {
         this.indent = "\t";
@@ -92,8 +108,10 @@ public class FormatConfig {
     }
 
     /**
+     * Sets the maximum column length for inline blocks.
+     *
      * @param maxColumnLength Maximum length to treat inline block as one line
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder maxColumnLength(int maxColumnLength) {
       this.maxColumnLength = maxColumnLength;
@@ -101,8 +119,10 @@ public class FormatConfig {
     }
 
     /**
+     * Sets placeholder parameters.
+     *
      * @param params Collection of params for placeholder replacement
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder params(Params params) {
       this.params = params;
@@ -110,41 +130,75 @@ public class FormatConfig {
     }
 
     /**
+     * Sets named placeholder parameters.
+     *
      * @param params Collection of params for placeholder replacement
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder params(Map<String, ?> params) {
       return params(Params.of(params));
     }
 
     /**
+     * Sets indexed placeholder parameters.
+     *
      * @param params Collection of params for placeholder replacement
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder params(List<?> params) {
       return params(Params.of(params));
     }
 
+    /**
+     * Sets the case conversion mode for SQL keywords.
+     *
+     * @param keywordCase keyword case mode
+     * @return this builder
+     */
     public FormatConfigBuilder keywordCase(String keywordCase) {
       this.keywordCase = normalizeCase(keywordCase, "keywordCase");
       return this;
     }
 
+    /**
+     * Sets the case conversion mode for data types.
+     *
+     * @param dataTypeCase data type case mode
+     * @return this builder
+     */
     public FormatConfigBuilder dataTypeCase(String dataTypeCase) {
       this.dataTypeCase = normalizeCase(dataTypeCase, "dataTypeCase");
       return this;
     }
 
+    /**
+     * Sets the case conversion mode for function names.
+     *
+     * @param functionCase function name case mode
+     * @return this builder
+     */
     public FormatConfigBuilder functionCase(String functionCase) {
       this.functionCase = normalizeCase(functionCase, "functionCase");
       return this;
     }
 
+    /**
+     * Sets the case conversion mode for identifiers.
+     *
+     * @param identifierCase identifier case mode
+     * @return this builder
+     */
     public FormatConfigBuilder identifierCase(String identifierCase) {
       this.identifierCase = normalizeCase(identifierCase, "identifierCase");
       return this;
     }
 
+    /**
+     * Sets whether logical operators are placed before or after line breaks.
+     *
+     * @param logicalOperatorNewline logical operator line break position
+     * @return this builder
+     */
     public FormatConfigBuilder logicalOperatorNewline(String logicalOperatorNewline) {
       String normalized = logicalOperatorNewline.toLowerCase(Locale.ROOT);
       if (!normalized.equals("before") && !normalized.equals("after")) {
@@ -155,28 +209,44 @@ public class FormatConfig {
     }
 
     /**
+     * Sets blank lines between formatted queries.
+     *
      * @param linesBetweenQueries How many line breaks between queries
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder linesBetweenQueries(int linesBetweenQueries) {
       this.linesBetweenQueries = linesBetweenQueries;
       return this;
     }
 
+    /**
+     * Sets whether spaces around operators are removed.
+     *
+     * @param denseOperators whether operator spacing should be compact
+     * @return this builder
+     */
     public FormatConfigBuilder denseOperators(boolean denseOperators) {
       this.denseOperators = denseOperators;
       return this;
     }
 
+    /**
+     * Sets whether semicolons are placed on their own line.
+     *
+     * @param newlineBeforeSemicolon whether semicolons should start a new line
+     * @return this builder
+     */
     public FormatConfigBuilder newlineBeforeSemicolon(boolean newlineBeforeSemicolon) {
       this.newlineBeforeSemicolon = newlineBeforeSemicolon;
       return this;
     }
 
     /**
+     * Sets whether block parentheses suppress surrounding whitespace.
+     *
      * @param skipWhitespaceNearBlockParentheses skip adding whitespace before and after block
      *     Parentheses
-     * @return This
+     * @return this builder
      */
     public FormatConfigBuilder skipWhitespaceNearBlockParentheses(
         boolean skipWhitespaceNearBlockParentheses) {
@@ -205,6 +275,13 @@ public class FormatConfig {
           this.skipWhitespaceNearBlockParentheses);
     }
 
+    /**
+     * Normalizes and validates a case conversion mode.
+     *
+     * @param value case conversion mode
+     * @param field field name used in validation errors
+     * @return normalized case conversion mode
+     */
     private String normalizeCase(String value, String field) {
       String normalized = value.toLowerCase(Locale.ROOT);
       if (!normalized.equals("preserve") && !normalized.equals("upper") && !normalized.equals("lower")) {

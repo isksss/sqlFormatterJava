@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the Couchbase N1QL dialect. */
 public class N1qlFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -246,6 +247,11 @@ public class N1qlFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a Couchbase N1QL formatter.
+   *
+   * @param cfg format configuration
+   */
   public N1qlFormatter(FormatConfig cfg) {
     super(cfg);
   }

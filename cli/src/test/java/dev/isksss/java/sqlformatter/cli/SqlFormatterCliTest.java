@@ -68,6 +68,35 @@ class SqlFormatterCliTest {
     }
 
     @Test
+    void rejectsInvalidJsonConfigValueTypes() throws Exception {
+        Path config = Files.writeString(tempDir.resolve("config.json"), "{\"tabWidth\":\"2\"}");
+        Result result = run(new String[] {"--config", config.toString()}, "select 1");
+
+        assertEquals(2, result.exitCode());
+        assertTrue(result.stderr().contains("tabWidth must be an integer"));
+    }
+
+    @Test
+    void printsUsageForHelp() {
+        Result result = run(new String[] {"--help"}, "select 1");
+
+        assertEquals(0, result.exitCode());
+        assertTrue(result.stdout().startsWith("Usage: sql-formatter-java"));
+        assertEquals("", result.stderr());
+    }
+
+    @Test
+    void rejectsMultipleInputFiles() throws Exception {
+        Path first = Files.writeString(tempDir.resolve("first.sql"), "select 1");
+        Path second = Files.writeString(tempDir.resolve("second.sql"), "select 2");
+
+        Result result = run(new String[] {first.toString(), second.toString()}, "");
+
+        assertEquals(2, result.exitCode());
+        assertTrue(result.stderr().contains("Only one SQL input file is supported"));
+    }
+
+    @Test
     void readsConfiguredInputCharset() throws Exception {
         Path sql = Files.writeString(
                 tempDir.resolve("latin1.sql"),

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the DB2 dialect. */
 public class Db2Formatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -581,6 +582,11 @@ public class Db2Formatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a DB2 formatter.
+   *
+   * @param cfg format configuration
+   */
   public Db2Formatter(FormatConfig cfg) {
     super(cfg);
   }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/** Tokenizes SQL text according to a dialect configuration. */
 public class Tokenizer {
   // private final Pattern WHITESPACE_PATTERN;
   private final Pattern NUMBER_PATTERN;
@@ -34,6 +35,8 @@ public class Tokenizer {
   private final Pattern STRING_NAMED_PLACEHOLDER_PATTERN;
 
   /**
+   * Creates a tokenizer for the given dialect configuration.
+   *
    * @param cfg {String[]} cfg.reservedWords Reserved words in SQL {String[]}
    *     cfg.reservedTopLevelWords Words that are set to new line separately {String[]}
    *     cfg.reservedNewlineWords Words that are set to newline {String[]} cfg.stringTypes String
@@ -42,7 +45,7 @@ public class Tokenizer {
    *     {String[]} cfg.indexedPlaceholderTypes Prefixes for indexed placeholders, like ? {String[]}
    *     cfg.namedPlaceholderTypes Prefixes for named placeholders, like @ and : {String[]}
    *     cfg.lineCommentTypes Line comments to enable, like # and -- {String[]} cfg.specialWordChars
-   *     Special chars that can be found inside of words, like @ and #
+     *     Special chars that can be found inside of words, like @ and #
    */
   public Tokenizer(DialectConfig cfg) {
     // this.WHITESPACE_PATTERN = Pattern.compile("^(\\s+)");

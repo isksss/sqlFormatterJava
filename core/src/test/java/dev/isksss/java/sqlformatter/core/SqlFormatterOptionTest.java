@@ -146,6 +146,48 @@ class SqlFormatterOptionTest {
                 service.format("select 1; select 2;", querySpacingConfig) + "\n");
     }
 
+    @Test
+    void mergeOverKeepsExplicitBooleanOverrides() {
+        FormatterConfig fallback = new FormatterConfig(
+                "postgresql",
+                4,
+                true,
+                "upper",
+                "upper",
+                "upper",
+                "upper",
+                "after",
+                10,
+                2,
+                true,
+                true,
+                ErrorPolicy.THROW,
+                "UTF-16");
+        FormatterConfig override = new FormatterConfig(
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                null,
+                null);
+
+        FormatterConfig merged = override.mergeOver(fallback);
+
+        assertEquals(false, merged.useTabs());
+        assertEquals(false, merged.denseOperators());
+        assertEquals(false, merged.newlineBeforeSemicolon());
+        assertEquals("postgresql", merged.dialect());
+        assertEquals(4, merged.tabWidth());
+    }
+
     private FormatterConfig config(
             String keywordCase,
             Integer tabWidth,

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the PostgreSQL dialect. */
 public class PostgreSqlFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -537,6 +538,11 @@ public class PostgreSqlFormatter extends AbstractFormatter {
         .build();
   }
 
+  /**
+   * Creates a PostgreSQL formatter.
+   *
+   * @param cfg format configuration
+   */
   public PostgreSqlFormatter(FormatConfig cfg) {
     super(cfg);
   }

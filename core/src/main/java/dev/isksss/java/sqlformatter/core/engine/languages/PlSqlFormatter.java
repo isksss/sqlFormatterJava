@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Formatter for the Oracle PL/SQL dialect. */
 public class PlSqlFormatter extends AbstractFormatter {
 
   private static final List<String> reservedWords =
@@ -455,6 +456,11 @@ public class PlSqlFormatter extends AbstractFormatter {
     return token;
   }
 
+  /**
+   * Creates an Oracle PL/SQL formatter.
+   *
+   * @param cfg format configuration
+   */
   public PlSqlFormatter(FormatConfig cfg) {
     super(cfg);
   }

@@ -6,7 +6,13 @@ import dev.isksss.java.sqlformatter.core.engine.core.util.Util;
 import java.util.Arrays;
 import java.util.Collections;
 
+/** Formatter for the SQLite dialect. */
 public class SqliteFormatter extends StandardSqlFormatter {
+  /**
+   * Creates a SQLite formatter.
+   *
+   * @param cfg format configuration
+   */
   public SqliteFormatter(FormatConfig cfg) {
     super(cfg);
   }

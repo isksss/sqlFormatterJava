@@ -36,6 +36,19 @@ public record FormatterConfig(
 
     /**
      * エラー方針と文字セットを指定しない整形設定を作成する。
+     *
+     * @param dialect SQL方言
+     * @param tabWidth スペースインデントの幅
+     * @param useTabs インデントにタブ文字を使うか
+     * @param keywordCase キーワードの大文字小文字
+     * @param dataTypeCase データ型の大文字小文字
+     * @param functionCase 関数名の大文字小文字
+     * @param identifierCase 非引用識別子の大文字小文字
+     * @param logicalOperatorNewline 論理演算子の改行位置
+     * @param expressionWidth 括弧内式を1行に保つ最大幅
+     * @param linesBetweenQueries 複数SQL文の間に入れる空行数
+     * @param denseOperators 演算子の周囲の空白を詰めるか
+     * @param newlineBeforeSemicolon セミコロンを独立行に置くか
      */
     public FormatterConfig(
             String dialect,
